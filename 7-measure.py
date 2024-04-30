@@ -21,7 +21,7 @@ def troyka_measure():
     val = 0
     for i in range(7, -1, -1):
         gp.output(dac, dec2bin(val+2**i))
-        time.sleep(0.001)
+        time.sleep(0.002)
         if (gp.input(comp) == 0):
             val += 2**i
     return val
@@ -39,22 +39,25 @@ try:
     measurments.append(cur_m/256*3.3)
     print(cur_m/256*3.3)
     bin2leds(cur_m)
-    while measurments[-1] < 3.19:
+    while measurments[-1] < 3.13:
         cur_m = troyka_measure()
         measurments.append(cur_m/256*3.3)
         print(cur_m/256*3.3)
         bin2leds(cur_m)
     gp.output(troyka, 0) #начало разрядки
-    while measurments[-1] > 0.2:
+    while measurments[-1] > 0.31:
         cur_m = troyka_measure()
         measurments.append(cur_m/256*3.3)
         print(cur_m/256*3.3)
         bin2leds(cur_m)
     t_finish = time.time()
     #обработка данных
-    plt.plot(measurments)
-    plt.show()
     duration = t_finish-t_start
+    timeline = []
+    for i in range(len(measurments)):
+        timeline.append(duration/len(measurments)*i)
+    plt.plot(timeline, measurments)
+    plt.show()
     print('\nSettings:')
     print(duration)
     with open('data.txt', 'w') as f:
